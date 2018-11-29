@@ -18,7 +18,7 @@ class Lexicon:
     """stores known word stems of various part-of-speech categories"""
     lexList = set([])
     def add(self, stem, cat):
-        self.lexList.add((stem, cat))
+        self.lexList.add((stem, cat.upper()))
     def getAll(self, cat):
         return [v[0] for v in self.lexList if v[1] == cat]
 
