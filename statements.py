@@ -16,9 +16,9 @@ def add(lst,item):
 
 class Lexicon:
     """stores known word stems of various part-of-speech categories"""
-    lexList = []
+    lexList = set([])
     def add(self, stem, cat):
-        add(self.lexList, (stem, cat))
+        self.lexList.add((stem, cat))
     def getAll(self, cat):
         return [v[0] for v in self.lexList if v[1] == cat]
 
@@ -38,39 +38,53 @@ class FactBase:
 
 import re
 from nltk.corpus import brown 
+
+brown_vb = set([])
+brown_vbz = set([])
+for v in brown.tagged_words():
+    if v[1] == "VB":
+        brown_vb.add(v[0])
+    elif v[1] == "VBZ":
+        brown_vbz.add(v[0])
+
+
 def verb_stem(s):
     """extracts the stem from the 3sg form of a verb, or returns empty string"""
+    ret = ""
     if not re.match(".*(a|e|i|o|u|s|x|y|z|ch|sh)s", s): # Rule 1
       print("Rule 1")
-      return s[:-1]
+      ret = s[:-1]
     elif re.match(".*(a|e|i|o|u)ys", s): # Rule 2
       print("Rule 2")
-      return s[:-1]
+      ret = s[:-1]
     elif len(s) >= 5 and re.match(".*ies", s) and not re.match(".*(a|e|i|o|u)ies", s): # Rule 3
       print("Rule 3")
-      return (s[:-3] + "y")
+      ret = (s[:-3] + "y")
     elif re.match(".*ies", s) : # Rule 4
       print("Rule 4")
-      return s[:-1]
+      ret = s[:-1]
     elif re.match(".*(o|x|ch|sh|ss|zz)es", s): # Rule 5
       print("Rule 5")
-      return s[:-2]
+      ret = s[:-2]
     elif re.match(".*(se|ze)s", s) and not re.match(".*(sse|zze)s", s): # Rule 6
       print("Rule 6")
-      return s[:-1]
+      ret = s[:-1]
     elif s == "unties":
-      return "untie"
+      ret = "untie"
     elif s == "has":
       print("Rule 7")
-      return "have"
+      ret = "have"
     elif s == "is":
-      return "be"
+      ret = "be"
     elif re.match(".*es",s) and not re.match(".*(i|o|s|x|z|ch|sh)es",s):
       print("Rule 8")
-      return s[:-1]
-    else: # Rule 1
-       return "" 
-
+      ret = s[:-1]
+    else:
+        pass
+    if not s in brown_vbz or not ret in brown_vb:
+      print("Not in brown corpus")
+      ret = ""
+    return ret
 
 
 def add_proper_name (w,lx):
@@ -108,21 +122,5 @@ def process_statement (lx,wlist,fb):
                     lx.add (stem,'T')
                     fb.addBinary ('T_'+stem,wlist[0],wlist[2])
     return msg
-
-def main():
- lx = Lexicon()
- lx.add("John","P")
- lx.add("Mary","P")
- lx.add("Mary","P")
- lx.add("like","T")
- print(lx.getAll("P"))
- fb = FactBase()
- fb.addUnary("duck","John")
- fb.addBinary("love","John","Mary")
- print(fb.queryUnary("duck","John")) # returns True
- print(fb.queryBinary("love","Mary","John")) # Return False  
- print(verb_stem("flys"))   
-
-main() 
 # End of PART A.
 
