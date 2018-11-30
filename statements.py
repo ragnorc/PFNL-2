@@ -39,6 +39,7 @@ class FactBase:
 import re
 from nltk.corpus import brown 
 
+print('Loading Brown Corpus. Please wait ...')
 brown_vb = set([])
 brown_vbz = set([])
 for v in brown.tagged_words():
@@ -46,7 +47,7 @@ for v in brown.tagged_words():
         brown_vb.add(v[0])
     elif v[1] == "VBZ":
         brown_vbz.add(v[0])
-
+print('Brown Corpus successfully loaded.')
 
 def verb_stem(s):
     """extracts the stem from the 3sg form of a verb, or returns empty string"""
