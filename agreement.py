@@ -67,6 +67,7 @@ def all_parses(wlist,lx):
 #    AN[x]  -> N[x] | A AN[x]
 #    Rel[x] -> WHO VP[x] | NP[y] T[y]
 #    N[s]   -> "Ns"  etc.
+#     
 
 def label(t):
     if (isinstance(t,str)):
@@ -91,7 +92,20 @@ def N_phrase_num(tr):
         return tr[0][1]  # the s or p from Ns or Np
     elif (tr.label() == 'Nom'):
         return N_phrase_num(tr[0])
-    elif  # add code here
+    elif  (tr.label() == 'AN'):
+        if tr[0].label() == 'A':
+            return N_phrase_num(tr[1])
+        elif tr[0].label() == 'N':
+            return N_phrase_num(tr[0])
+        else:
+            print("Parse tree not accepted by grammar")
+    elif (tr.label() == 'NP'):
+        if (tr[0].label() == 'P'):
+            return 's'
+        elif (tr[0].label() == 'AR'):
+            return N_phrase_num(tr[1]) #could actually just return s?
+        elif (tr[0].label() == 'Nom'):
+            return N_phrase_num(tr[0]) #could actually just return s?
 
 def V_phrase_num(tr):
     """returns the number attribute of a verb-like tree, based on its head verb,
@@ -100,25 +114,62 @@ def V_phrase_num(tr):
         return tr[0][1]  # the s or p from Is,Ts or Ip,Tp
     elif (tr.label() == 'VP'):
         return V_phrase_num(tr[0])
-    elif  # add code here
+    elif  (tr.label() == 'BE'):
+        return tr[0][2]
+    elif  (tr.label() == 'DO'):
+        return tr[0][2]
+    elif  (tr.label() == 'QP'):
+        if tr[0].label() == 'VP':
+            return V_phrase_num(tr[0])
+        elif tr[0].label() == 'DO':
+            return '' # Could be singular or plural
+    elif (tr.label() == 'Rel'):
+        return V_phrase_num(tr[1]) 
 
 def matches(n1,n2):
     return (n1==n2 or n1=='' or n2=='')
 
 def check_node(tr):
-    """checks agreement constraints at the root of tr"""
+    """checks agreement constraints at the root of tr for S, QP, VP,
+NP, Nom, AN, Rel"""
     rule = top_level_rule(tr)
     if (rule == 'S -> WHICH Nom QP QM'):
+        print(N_phrase_num(tr[1]))
+        print("check")
+        print(V_phrase_num(tr[2]))
         return (matches (N_phrase_num(tr[1]), V_phrase_num(tr[2])))
     elif (rule == 'NP -> AR Nom'):
-        return (N_phrase_num(tr[1]) == 's')
-    elif  # add code here
+        print("agreement error2")
+        return (matches (N_phrase_num(tr[1]), 's'))
+    elif (rule == 'NP -> Nom'):
+        print("agreement error3")
+        return (matches (N_phrase_num(tr[0]), 'p'))
+    elif (rule == 'Nom -> AN Rel'):
+        print("agreement error4")
+        return (matches (N_phrase_num(tr[0]), V_phrase_num(tr[1])))
+    elif (rule == 'Rel -> NP T'):
+        print("agreement error5")
+        return (matches (N_phrase_num(tr[0]), V_phrase_num(tr[1])))
+    elif (rule == 'QP -> DO NP T'):
+        print("agreement error6")
+        return (matches (V_phrase_num(tr[0]), N_phrase_num(tr[1])) and (matches (V_phrase_num(tr[2]), 'p')))
+    elif (rule == 'VP -> BE NP'):
+        print("agreement error7")
+        return (matches (V_phrase_num(tr[0]), N_phrase_num(tr[1])))
+    elif (rule == 'VP -> VP AND VP'):
+        print("agreement error8")
+        return (matches (V_phrase_num(tr[0]), V_phrase_num(tr[2])))
+    else:
+        return True
+    
 
 def check_all_nodes(tr):
     """checks agreement constraints everywhere in tr"""
     if (isinstance(tr,str)):
         return True
     elif (not check_node(tr)):
+        print(tr)
+        print("agreement error")
         return False
     else:
         for subtr in tr:

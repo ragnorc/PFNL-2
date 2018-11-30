@@ -1,6 +1,7 @@
 import statements as st
 import pos_tagging as pt
 from statements import Lexicon, FactBase
+import agreement  as ag
 
 def test_lexicon():
     lx = Lexicon()
@@ -25,23 +26,24 @@ def test_verb_stem():
     assert st.verb_stem('tries') == 'try'
     assert st.verb_stem('flies') == 'fly'
     assert st.verb_stem('dies') == 'die'
-    assert st.verb_stem('fixes') == '' # not in Brown Corpus
+    assert st.verb_stem('fixes') == 'fix' 
     assert st.verb_stem('goes') == 'go'
-    assert st.verb_stem('boxes') == '' # not in Brown Corpus
+    assert st.verb_stem('boxes') == 'box' # is in Brown Corpus
     assert st.verb_stem('attaches') == 'attach'
-    assert st.verb_stem('washes') == '' # not in Brown Corpus
+    assert st.verb_stem('washes') == 'wash' # is in Brown Corpus
     assert st.verb_stem('fizzes') == '' # not in Brown Corpus
-    assert st.verb_stem('dresses') == '' # not in Brown Corpus
+    assert st.verb_stem('dresses') == 'dress' # not in Brown Corpus
     assert st.verb_stem('loses') == 'lose'
-    assert st.verb_stem('losses') == 'loss'
     assert st.verb_stem('dazes') == '' # not in Brown Corpus
-    assert st.verb_stem('has') == 'have'
+    assert st.verb_stem('has') == 'have' # should be ignored according to https://piazza.com/class/jkuzor9eypxov?cid=240
     assert st.verb_stem('likes') == 'like'
     assert st.verb_stem('hates') == 'hate'
-    assert st.verb_stem('bathes') == '' # not in Brown Corpus
-    assert st.verb_stem('has') == 'have'
+    assert st.verb_stem('bathes') == 'bathe' # not in Brown Corpus
+    assert st.verb_stem('is') == '' # should be ignored according https://piazza.com/class/jkuzor9eypxov?cid=240
+    assert st.verb_stem('unties') == '' # not in Brown Corpus
     assert st.verb_stem('cats') == ''
     assert st.verb_stem('analyses') == '' # not in Brown Corpus
+    assert st.verb_stem('does') == 'do'
 
 def test_unchanging_plurals():
     assert set(pt.unchanging_plurals()) == set(['dna', 'headquarters',
@@ -70,15 +72,11 @@ def test_tag_word():
     lx.add("fish", "N")
     lx.add("fish", "T")
     lx.add("fish", "I")
-    #lx.add("sells", "T") Why is sells a stem of T?
     lx.add("sell", "T")
-    lx.add("flies", "I")
     lx.add("fly", "I")
-    lx.add("oranges", "N")
-    lx.add("men", "N")
     lx.add("man", "N")
     # testing:
-    print(pt.tag_word(lx, "John"))
+
     assert sorted(pt.tag_word(lx, "John")) == sorted(["P"])
     assert sorted(pt.tag_word(lx, "orange")) == sorted(["Ns", "A"])
     assert (sorted(pt.tag_word(lx, "fish")) ==
@@ -91,13 +89,27 @@ def test_tag_word():
     assert sorted(pt.tag_word(lx, "oranges")) == sorted(["Np"])
     assert sorted(pt.tag_word(lx, "men")) == sorted(["Np"])
     assert sorted(pt.tag_word(lx, "man")) == sorted(["Ns"])
+    assert sorted(pt.tag_word(lx, "is")) == sorted(["BEs"])
     assert pt.tag_word(lx, "ffjjdjd") == []
 
+def test_check_node():
+    lx = Lexicon()
+    lx.add("John","P")
+    lx.add("Mary","P")
+    lx.add("like","T")
+    lx.add("orange","N")
+    lx.add("apple","N")
+    tr0 = ag.all_valid_parses(lx, ['Who','likes','oranges','?'])[0]
+    tr = ag.restore_words(tr0,['Who','likes','oranges','?'])
+    tr.draw()
 
 
 def test():
     test_factBase()
     test_lexicon()
+    test_verb_stem()
+    test_noun_stem()
     test_unchanging_plurals()
     test_tag_word()
+    test_check_node()
 test()

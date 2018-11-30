@@ -90,7 +90,7 @@ def tag_word (lx,wd):
       tag_set.add("A")
     if wd in lx.getAll("N"):
       tag_set.add("Ns")
-    if noun_stem(wd) in lx.getAll("N") or wd in unchanging_plurals_list or wd in lx.getAll("Np"):
+    if noun_stem(wd) in lx.getAll("N") or wd in unchanging_plurals_list or wd in lx.getAll("Np"): # last check in case the lexicon stores plurals
       tag_set.add("Np")
     if wd in lx.getAll("I"):
       tag_set.add("Ip")
@@ -98,35 +98,12 @@ def tag_word (lx,wd):
       tag_set.add("Is")
     if wd in lx.getAll("T"):
       tag_set.add("Tp")
-    if verb_stem(wd) in lx.getAll("T") or wd in lx.getAll("Ts"): # last check: should the lexicon store plurals
+    if verb_stem(wd) in lx.getAll("T") or wd in lx.getAll("Ts"): # last check in case the lexicon stores plurals
       tag_set.add("Ts")
     for t in function_words_tags:
         if wd == t[0]:
             tag_set.add(t[1])
 
-
-    '''
-    if wd in lx.getAll("BEs"):
-      tag_set.add("BEs")
-   
-      
-    elif any(w in lx.getAll("BEp") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("BEp")  
-    elif any(w in lx.getAll("DOs") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("DOs")
-    elif any(w in lx.getAll("DOp") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("DOp") 
-    elif any(w in lx.getAll("AR") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("AR")      
-    elif any(w in lx.getAll("AND") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("AND")
-    elif any(w in lx.getAll("WHO") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("WHO")  
-    elif any(w in lx.getAll("WHICH") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("WHICH")
-    elif any(w in lx.getAll("?") for w in [wd, verb_stem(wd), noun_stem(wd)]):
-      tag_set.add("?")                                                     
-'''
     return list(tag_set)
     #return list(set([t[1] for t in complete_lexicon if t[0]==wd or t[0] == verb_stem(wd) or t[0] == noun_stem(wd)]))
 

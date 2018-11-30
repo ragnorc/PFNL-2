@@ -51,6 +51,10 @@ for v in brown.tagged_words():
 def verb_stem(s):
     """extracts the stem from the 3sg form of a verb, or returns empty string"""
     ret = ""
+    exceptionsDict = {
+        "has": "have",
+        "does" : "do"
+    } # Should exceptions be ignored? https://piazza.com/class/jkuzor9eypxov?cid=240
     if not re.match(".*(a|e|i|o|u|s|x|y|z|ch|sh)s", s): # Rule 1
       print("Rule 1")
       ret = s[:-1]
@@ -69,21 +73,16 @@ def verb_stem(s):
     elif re.match(".*(se|ze)s", s) and not re.match(".*(sse|zze)s", s): # Rule 6
       print("Rule 6")
       ret = s[:-1]
-    elif s == "unties":
-      ret = "untie"
-    elif s == "has":
-      print("Rule 7")
-      ret = "have"
-    elif s == "is":
-      ret = "be"
     elif re.match(".*es",s) and not re.match(".*(i|o|s|x|z|ch|sh)es",s):
       print("Rule 8")
       ret = s[:-1]
     else:
         pass
-    if not s in brown_vbz or not ret in brown_vb:
+    if not s in brown_vbz and not ret in brown_vb:
       print("Not in brown corpus")
       ret = ""
+    if s in exceptionsDict:
+       ret = exceptionsDict[s]
     return ret
 
 
