@@ -19,15 +19,37 @@ def sem(tr):
         return tr[0][0]
     elif (tr.label() == 'N'):
         return '(\\x.' + tr[0][0] + '(x))'  # \\ is escape sequence for \
-    elif  # add code here
+    elif (tr.label() == 'A'):
+        return '(\\x.' + tr[0] + '(x))' 
+    elif (tr.label() == 'I'):
+        return '(\\x.' + tr[0][0] + '(x))' 
+    elif (tr.label() == 'T'):
+        return '(\\x.\\y.' + tr[0][0] + '(x,y))' 
+   # elif (tr.label() == 'BE'):
+     #   return '(\\x.' + tr[0][0] + '(x))' 
     
+
+
+
     elif (rule == 'AN -> A AN'):
         return '(\\x.(' + sem(tr[0]) + '(x) & ' + sem(tr[1]) + '(x)))'
     elif (rule == 'NP -> P'):
         return '(\\x.(x = ' + sem(tr[0]) + '))'
-    elif  # add more code here
-
-
+    elif (rule == 'VP -> I'):
+        return sem(tr[0])
+    elif  (rule == 'VP -> T NP'):
+        print('VP -> T NP')
+        return '(\\x.(exists y.(('+sem(tr[1])+')(y) &(((' + sem(tr[0]) + ')(x))(y)))))' 
+       # return '(\\x.(' + sem(tr[0]) +'(x)('+sem(tr[1])+')'+ '))'
+       #return sem(tr[0])+'.('+sem(tr[1])
+    elif  (rule == 'QP -> VP'):
+       print('QP -> VP')
+       return sem(tr[0])
+    elif  (rule == 'QP -> DO NP T'):
+       print("QP -> DO NP T")
+       return '(\\x.(exists y.(('+sem(tr[1])+')(y) &(((' + sem(tr[2]) + ')(y))(x)))))'   
+    elif  (rule == 'S -> WHO QP QM'):
+       return sem(tr[1])
 # Logic parser for lambda expressions
 
 from nltk.sem.logic import LogicParser
@@ -117,10 +139,12 @@ def dialogue():
                 elif (len(trees)>1):
                     output ("Ambiguous!")
                 else:
+                    trees[0].draw()
                     tr = restore_words (trees[0],wds)
+                    print(sem(tr))
                     lam_exp = lp.parse(sem(tr))
                     L = lam_exp.simplify()
-                    # print L  # useful for debugging
+                    print(L)  # useful for debugging
                     entities = lx.getAll('P')
                     results = find_all_solutions (L,entities,fb)
                     if (results == []):

@@ -1,0 +1,3 @@
+- non-literal meaning interpretation, e.g metaphors
+- better inference, not only modus ponens
+- Quantifiers in FOPL
