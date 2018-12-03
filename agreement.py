@@ -134,30 +134,20 @@ def check_node(tr):
 NP, Nom, AN, Rel"""
     rule = top_level_rule(tr)
     if (rule == 'S -> WHICH Nom QP QM'):
-        print(N_phrase_num(tr[1]))
-        print("check")
-        print(V_phrase_num(tr[2]))
         return (matches (N_phrase_num(tr[1]), V_phrase_num(tr[2])))
     elif (rule == 'NP -> AR Nom'):
-        print("agreement error2")
         return (matches (N_phrase_num(tr[1]), 's'))
     elif (rule == 'NP -> Nom'):
-        print("agreement error3")
         return (matches (N_phrase_num(tr[0]), 'p'))
     elif (rule == 'Nom -> AN Rel'):
-        print("agreement error4")
         return (matches (N_phrase_num(tr[0]), V_phrase_num(tr[1])))
     elif (rule == 'Rel -> NP T'):
-        print("agreement error5")
         return (matches (N_phrase_num(tr[0]), V_phrase_num(tr[1])))
     elif (rule == 'QP -> DO NP T'):
-        print("agreement error6")
         return (matches (V_phrase_num(tr[0]), N_phrase_num(tr[1])) and (matches (V_phrase_num(tr[2]), 'p')))
     elif (rule == 'VP -> BE NP'):
-        print("agreement error7")
         return (matches (V_phrase_num(tr[0]), N_phrase_num(tr[1])))
     elif (rule == 'VP -> VP AND VP'):
-        print("agreement error8")
         return (matches (V_phrase_num(tr[0]), V_phrase_num(tr[2])))
     else:
         return True
@@ -168,8 +158,6 @@ def check_all_nodes(tr):
     if (isinstance(tr,str)):
         return True
     elif (not check_node(tr)):
-        print(tr)
-        print("agreement error")
         return False
     else:
         for subtr in tr:

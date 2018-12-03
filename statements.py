@@ -39,7 +39,7 @@ class FactBase:
 import re
 from nltk.corpus import brown 
 
-print('Loading Brown Corpus. Please wait ...')
+print('Preloading Brown Corpus. Please wait ...')
 brown_vb = set([])
 brown_vbz = set([])
 for v in brown.tagged_words():
@@ -57,30 +57,22 @@ def verb_stem(s):
         "does" : "do"
     } # Should exceptions be ignored? https://piazza.com/class/jkuzor9eypxov?cid=240
     if not re.match(".*(a|e|i|o|u|s|x|y|z|ch|sh)s", s): # Rule 1
-      print("Rule 1")
       ret = s[:-1]
     elif re.match(".*(a|e|i|o|u)ys", s): # Rule 2
-      print("Rule 2")
       ret = s[:-1]
     elif len(s) >= 5 and re.match(".*ies", s) and not re.match(".*(a|e|i|o|u)ies", s): # Rule 3
-      print("Rule 3")
       ret = (s[:-3] + "y")
     elif re.match(".*ies", s) : # Rule 4
-      print("Rule 4")
       ret = s[:-1]
     elif re.match(".*(o|x|ch|sh|ss|zz)es", s): # Rule 5
-      print("Rule 5")
       ret = s[:-2]
     elif re.match(".*(se|ze)s", s) and not re.match(".*(sse|zze)s", s): # Rule 6
-      print("Rule 6")
       ret = s[:-1]
     elif re.match(".*es",s) and not re.match(".*(i|o|s|x|z|ch|sh)es",s):
-      print("Rule 8")
       ret = s[:-1]
     else:
         pass
     if not s in brown_vbz and not ret in brown_vb:
-      print("Not in brown corpus")
       ret = ""
     if s in exceptionsDict:
        ret = exceptionsDict[s]

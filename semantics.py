@@ -20,36 +20,66 @@ def sem(tr):
     elif (tr.label() == 'N'):
         return '(\\x.' + tr[0][0] + '(x))'  # \\ is escape sequence for \
     elif (tr.label() == 'A'):
-        return '(\\x.' + tr[0] + '(x))' 
+        return '(\\x.' + tr[0][0] + '(x))' 
     elif (tr.label() == 'I'):
         return '(\\x.' + tr[0][0] + '(x))' 
     elif (tr.label() == 'T'):
         return '(\\x.\\y.' + tr[0][0] + '(x,y))' 
-   # elif (tr.label() == 'BE'):
-     #   return '(\\x.' + tr[0][0] + '(x))' 
-    
 
 
-
+    elif  (rule == 'S -> WHO QP QM'):
+        #print("S -> WHO QP QM")
+        return sem(tr[1])
+    elif  (rule == 'S -> WHICH Nom QP QM'):
+        #print("S -> WHICH Nom QP QM")
+        return '(\\x.(' + sem(tr[1]) + '(x) & ' + sem(tr[2]) + '(x)))'
     elif (rule == 'AN -> A AN'):
+        #print('AN -> A AN')
         return '(\\x.(' + sem(tr[0]) + '(x) & ' + sem(tr[1]) + '(x)))'
     elif (rule == 'NP -> P'):
+        #print('NP -> P')
         return '(\\x.(x = ' + sem(tr[0]) + '))'
-    elif (rule == 'VP -> I'):
+    elif (rule == 'NP -> Nom'):
+        #print('NP -> Nom')
         return sem(tr[0])
+    elif (rule == 'NP -> AR Nom'):
+        #print('NP -> AR Nom')
+        return sem(tr[1])
+    elif (rule == 'VP -> I'):
+        #print('VP -> I')
+        return sem(tr[0])
+    elif (rule == 'VP -> VP AND VP'):
+        #print('VP -> VP AND VP')
+        return '(\\x.(' + sem(tr[0]) + '(x) & ' + sem(tr[2]) + '(x)))'
+    elif (rule == 'VP -> BE NP'):
+        #print('VP -> BE NP')
+        return sem(tr[1])
+    elif (rule == 'VP -> BE A'):
+        #print('VP -> BE A')
+        return sem(tr[1])
     elif  (rule == 'VP -> T NP'):
-        print('VP -> T NP')
+        #print('VP -> T NP')
         return '(\\x.(exists y.(('+sem(tr[1])+')(y) &(((' + sem(tr[0]) + ')(x))(y)))))' 
-       # return '(\\x.(' + sem(tr[0]) +'(x)('+sem(tr[1])+')'+ '))'
-       #return sem(tr[0])+'.('+sem(tr[1])
     elif  (rule == 'QP -> VP'):
-       print('QP -> VP')
+       #print('QP -> VP')
        return sem(tr[0])
     elif  (rule == 'QP -> DO NP T'):
-       print("QP -> DO NP T")
+       #print("QP -> DO NP T")
        return '(\\x.(exists y.(('+sem(tr[1])+')(y) &(((' + sem(tr[2]) + ')(y))(x)))))'   
-    elif  (rule == 'S -> WHO QP QM'):
-       return sem(tr[1])
+    elif  (rule == 'AN -> N'):
+       return sem(tr[0])
+    elif  (rule == 'Nom -> AN Rel'):
+        #print('Nom -> AN Rel')
+        return '(\\x.(' + sem(tr[0]) + '(x) & ' + sem(tr[1]) + '(x)))'
+    elif  (rule == 'Nom -> AN'):
+        #print('Nom -> AN')
+        return sem(tr[0])
+    elif  (rule == 'Rel -> NP T'):
+        #print('Rel -> NP T')
+        return '(\\x.(exists y.(('+sem(tr[0])+')(y) &(((' + sem(tr[1]) + ')(y))(x)))))'
+    elif  (rule == 'Rel -> WHO VP'):
+        #print('Rel -> WHO VP')
+        return sem(tr[1])
 # Logic parser for lambda expressions
 
 from nltk.sem.logic import LogicParser
@@ -139,12 +169,12 @@ def dialogue():
                 elif (len(trees)>1):
                     output ("Ambiguous!")
                 else:
-                    trees[0].draw()
+                    # trees[0].draw() useful for debugging
                     tr = restore_words (trees[0],wds)
-                    print(sem(tr))
+                   # print(sem(tr)) useful for debugging
                     lam_exp = lp.parse(sem(tr))
                     L = lam_exp.simplify()
-                    print(L)  # useful for debugging
+                    #print(L)  useful for debugging
                     entities = lx.getAll('P')
                     results = find_all_solutions (L,entities,fb)
                     if (results == []):

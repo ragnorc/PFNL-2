@@ -1,3 +1,12 @@
-- non-literal meaning interpretation, e.g metaphors
-- better inference, not only modus ponens
-- Quantifiers in FOPL
+
+- The system should be able to deal with synonyms and hyponyms. For example, asking whether the sofa is red or the coach is red should be equivalent.
+Similarly for hyponyms, entering "John eats a Mango" should give a positive truth valuation to the question "Does John eat a fruit?". 
+This could be implemented by keeping track of such relationships in our lexicon or, alternatively, querying other databases or APIs 
+that store synonyms and other lexical relations and comparing them with our query. A good API is https://www.wordsapi.com/.
+
+- Using more rules of inference alongside the modus ponens would also significantly improve our system. 
+Examples include the modus tollens or the frequently ocurring hypothetical syllogism. 
+
+- A simple improvement would be to expand our CFG to enable more sophisticated questions and statements. For instance, we could
+add sentences that not only involve the accusative (object) and nominative (subject) but also the ablative or genitive 
+and consequently add the respective interrogative pronouns to S such as "What", "Where" or "Whose". 
